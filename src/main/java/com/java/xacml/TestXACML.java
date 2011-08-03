@@ -129,24 +129,25 @@ public class TestXACML {
 		// case only one is being defined.
 		List<TargetMatch> resource = new ArrayList<TargetMatch>();
 		
+		// get the factory that handles Target functions
+		FunctionFactory factory = FunctionFactory.getTargetInstance();
+		
 		// -- 1 Subject
+		// Match function for the subject-id attribute
+		// get an instance of the right function for matching subject attributes
+		Function subjectFunction = factory.createFunction("urn:oasis:names:tc:xacml:1.0:function:rfc822Name-match");
+		
 		URI subjectDesignatorType = new URI("urn:oasis:names:tc:xacml:1.0:data-type:rfc822Name");
 		URI subjectDesignatorId = new URI("urn:oasis:names:tc:xacml:1.0:subject:subject-id");
-		// Match function for the subject-id attribute
-		String subjectMatchId = "urn:oasis:names:tc:xacml:1.0:function:rfc822Name-match";
+		StringAttribute subjectValue = new StringAttribute("secf.com");
+		
 		AttributeDesignator subjectDesignator = new AttributeDesignator(
-						AttributeDesignator.SUBJECT_TARGET,
+						AttributeDesignator.SUBJECT_TARGET, // the <SubjectAttributeDesignator /> tag
 						subjectDesignatorType,
 						subjectDesignatorId,
 						false);
-		StringAttribute subjectValue = new StringAttribute("secf.com");
-		// get the factory that handles Target functions
-		FunctionFactory factory = FunctionFactory.getTargetInstance();
-		// get an instance of the right function for matching
-		// subject attributes
-		Function subjectFunction = factory.createFunction(subjectMatchId);
 		TargetMatch subjectMatch = new TargetMatch(
-				TargetMatch.SUBJECT,
+				TargetMatch.SUBJECT, // the <SubjectMatch></SubjectMatch> tag
 				subjectFunction,
 				subjectDesignator,
 				subjectValue);
@@ -154,21 +155,21 @@ public class TestXACML {
 
 		
 		// -- 1 Ressource
+		// Match function for the resource-id attribute
+		// Get an instance of the right function for matching resource attribute
+		Function resourceFunction = factory.createFunction("urn:oasis:names:tc:xacml:1.0:function:anyURI-equal");
+		
 		URI resourceDesignatorType = new URI("http://www.w3.org/2001/XMLSchema#anyURI");
 		URI resourceDesignatorId = new URI("urn:oasis:names:tc:xacml:1.0:resource:resource-id");
-		// Match function for the resource-id attribute
-		String resourceMatchId = "urn:oasis:names:tc:xacml:1.0:function:anyURI-equal";
-		AttributeDesignator resourceDesignator = new AttributeDesignator(
-						AttributeDesignator.RESOURCE_TARGET,
-						resourceDesignatorType,
-						resourceDesignatorId,
-						false);
 		AnyURIAttribute resourceValue = new AnyURIAttribute(new URI("file:///D:/Documents/Administrator/Desktop/Project/Plan.html"));
-		// Get an instance of the right function for matching 
-		// resource attribute
-		Function resourceFunction = factory.createFunction(resourceMatchId);
+		
+		AttributeDesignator resourceDesignator = new AttributeDesignator(
+				AttributeDesignator.RESOURCE_TARGET, // the <ResourceAttributeDesignator /> tag
+				resourceDesignatorType,
+				resourceDesignatorId,
+				false);
 		TargetMatch resourceMatch = new TargetMatch(
-				TargetMatch.RESOURCE,
+				TargetMatch.RESOURCE, // the <ResourceMatch></ResourceMatch> tag
 				resourceFunction,
 				resourceDesignator,
 				resourceValue);
@@ -183,7 +184,7 @@ public class TestXACML {
 		return new Target(subjects, resources, null);
 	}
 
-	private List<Rule> createPolicyRules() throws URISyntaxException {
+	private List<Rule> createPolicyRules() throws URISyntaxException, UnknownIdentifierException, FunctionTypeException {
 		// Step 1: Define the identifier for the rule
 		URI ruleId = new URI("ProjectPlanAccessRule");
 		String ruleDescription = "Rule for accessing project plan";
@@ -208,37 +209,28 @@ public class TestXACML {
 	}
 
 	private Target createRuleTarget() {
-		// TODO Auto-generated method stub
+		// Target can be overloaded and clarified for a specific rule if needed
 		return null;
 	}
 	
-	private Apply createRuleCondition() throws URISyntaxException {
+	private Apply createRuleCondition() throws URISyntaxException, UnknownIdentifierException, FunctionTypeException {
 		List conditionArgs = new ArrayList();
 		List<AttributeDesignator> applyArgs = new ArrayList<AttributeDesignator>();
 
+		
 		// Define the name and type of the attribute
 		// to be used in the condition
 		URI designatorType = new URI("http://www.w3.org/2001/XMLSchema#string");
 		URI designatorId = new URI("group");
-
+		
 		// Pick the function that the condition uses
 		FunctionFactory factory = FunctionFactory.getConditionInstance();
-		Function conditionFunction = null;
-		try {
-			conditionFunction = factory.createFunction("urn:oasis:names:tc:xacml:1.0:function:" + "string-equal");
-		} catch (Exception e) {
-			return null;
-		}
+		Function conditionFunction = factory.createFunction("urn:oasis:names:tc:xacml:1.0:function:string-equal");
 
 		// Choose the function to pick one of the
 		// multiple values returned by AttributetDesignator
 		factory = FunctionFactory.getGeneralInstance();
-		Function applyFunction = null;
-		try {
-			applyFunction = factory.createFunction("urn:oasis:names:tc:xacml:1.0:function:"+ "string-one-and-only");
-		} catch (Exception e) {
-			return null;
-		}
+		Function applyFunction = factory.createFunction("urn:oasis:names:tc:xacml:1.0:function:string-one-and-only");
 
 		// Create the AttributeDesignator
 		AttributeDesignator designator = new AttributeDesignator(
