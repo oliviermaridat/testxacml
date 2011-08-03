@@ -31,8 +31,8 @@ import com.sun.xacml.cond.FunctionFactory;
 import com.sun.xacml.cond.FunctionTypeException;
 import com.sun.xacml.ctx.Result;
 
-public class TestXACML {
-	private static final Logger LOG = Logger.getLogger(TestXACML.class);
+public class CreatePEP {
+	private static final Logger LOG = Logger.getLogger(CreatePEP.class);
 	
     /**
 	 * @param args
@@ -41,9 +41,9 @@ public class TestXACML {
 		CommandLine cmd = getCommandLine(args);
 //		String server = cmd.hasOption('s') ? cmd.getOptionValue('s') : defaultServer;
 
-		TestXACML test = null;
+		CreatePEP test = null;
         try {
-        	test = new TestXACML();
+        	test = new CreatePEP();
         	test.start();
         	
         	LOG.info("Create policy");
@@ -84,7 +84,7 @@ public class TestXACML {
 		formatter.printHelp("java -jar testxacml-bin.jar [-s server] [-u username] [-p password] [-r resource] [-d] ", options);
 	}
 	
-	public TestXACML() {
+	public CreatePEP() {
 	}
 	
 	public void start() {
